@@ -28,8 +28,8 @@ function middleware(request) {
     // Check if user is trying to access protected routes
     const isProtectedRoute = pathname.startsWith("/dashboard");
     const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register");
-    // Get token from cookies or headers
-    const token = request.cookies.get("token")?.value || request.headers.get("authorization")?.replace("Bearer ", "");
+    // Get token from cookies (we'll need to set this in the auth context)
+    const token = request.cookies.get("token")?.value;
     // If accessing protected route without token, redirect to login
     if (isProtectedRoute && !token) {
         return __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$exports$2f$index$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/login", request.url));

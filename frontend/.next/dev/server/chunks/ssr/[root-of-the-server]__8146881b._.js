@@ -272,10 +272,8 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$wagmi$2f$dist$2f$esm$2f$hooks$2f$useAccount$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/node_modules/wagmi/dist/esm/hooks/useAccount.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/lib/api.ts [app-ssr] (ecmascript)");
 "use client";
-;
 ;
 ;
 ;
@@ -284,46 +282,125 @@ function AuthProvider({ children }) {
     const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [token, setToken] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [isLoading, setIsLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
-    const { address } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$wagmi$2f$dist$2f$esm$2f$hooks$2f$useAccount$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useAccount"])();
+    // Initialize auth state from localStorage and cookies
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        setIsLoading(false);
-    }, []);
-    const login = async (email, password)=>{
-        const response = await __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["authApi"].login({
-            email,
-            password
-        });
-        console.log("Reesponse: ", response);
-        if (!response || !response.user || !response.token) {
-            throw new Error("Invalid login response");
-        }
-        setUser(response.user);
-        setToken(response.token);
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        return {
-            success: true
+        const initializeAuth = ()=>{
+            try {
+                const storedToken = localStorage.getItem("token");
+                const storedUser = localStorage.getItem("user");
+                console.log("Initializing auth - stored data:", {
+                    storedToken,
+                    storedUser
+                });
+                if (storedToken && storedUser) {
+                    const userData = JSON.parse(storedUser);
+                    setToken(storedToken);
+                    setUser(userData);
+                    // Also set cookie for middleware
+                    document.cookie = `token=${storedToken}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 days
+                    console.log("Auth initialized with user:", userData);
+                }
+            } catch (error) {
+                console.error("Error initializing auth:", error);
+                // Clear corrupted data
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            } finally{
+                setIsLoading(false);
+            }
         };
+        initializeAuth();
+    }, []);
+    // Track when user state actually changes
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        console.log("User state changed:", user);
+        if (user) {
+            console.log("User is now set:", {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            });
+        } else {
+            console.log("User is null/undefined");
+        }
+    }, [
+        user
+    ]);
+    const login = async (email, password)=>{
+        try {
+            setIsLoading(true);
+            // For testing - let's see what the API actually returns
+            console.log("Calling authApi.login with:", {
+                email,
+                password
+            });
+            const response = await __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["authApi"].login({
+                email,
+                password
+            });
+            console.log("Login response: ", response);
+            console.log("Response user:", response?.user);
+            console.log("Response token:", response?.token);
+            console.log("Response type:", typeof response);
+            console.log("Response keys:", Object.keys(response || {}));
+            if (!response?.user || !response?.token) {
+                console.error("Invalid login response - missing user or token");
+                throw new Error("Invalid login response");
+            }
+            // Update state
+            console.log("Setting user state to:", response.user);
+            setUser(response.user);
+            setToken(response.token);
+            // Force a re-render by logging the state after a microtask
+            setTimeout(()=>{
+                console.log("State should be updated now");
+            }, 0);
+            // Update localStorage
+            localStorage.setItem("token", response.token);
+            localStorage.setItem("user", JSON.stringify(response.user));
+            // Also set cookie for middleware
+            document.cookie = `token=${response.token}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 days
+            console.log("Login successful, user set:", response.user);
+            console.log("localStorage user:", localStorage.getItem("user"));
+            // Give a small delay to ensure state is updated
+            await new Promise((resolve)=>setTimeout(resolve, 100));
+            return {
+                success: true
+            };
+        } catch (error) {
+            console.error("Login error:", error);
+            throw error;
+        } finally{
+            setIsLoading(false);
+        }
     };
     const register = async (name, email, password, walletAddress)=>{
-        const response = await __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["authApi"].register({
-            name,
-            email,
-            password,
-            walletAddress
-        });
-        setUser(response.user);
-        setToken(response.token);
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
+        try {
+            setIsLoading(true);
+            const response = await __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["authApi"].register({
+                name,
+                email,
+                password,
+                walletAddress
+            });
+            setUser(response.user);
+            setToken(response.token);
+            localStorage.setItem("token", response.token);
+            localStorage.setItem("user", JSON.stringify(response.user));
+            // Also set cookie for middleware
+            document.cookie = `token=${response.token}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 days
+        } finally{
+            setIsLoading(false);
+        }
     };
     const logout = ()=>{
         setUser(null);
         setToken(null);
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        // Also clear cookie
+        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(AuthContext.Provider, {
         value: {
@@ -337,7 +414,7 @@ function AuthProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/frontend/lib/auth.tsx",
-        lineNumber: 91,
+        lineNumber: 174,
         columnNumber: 5
     }, this);
 }

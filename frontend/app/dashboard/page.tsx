@@ -6,6 +6,7 @@ import { SharedSection } from "@/components/dashboard/shared-section";
 import { AuditSection } from "@/components/dashboard/audit-section";
 import { SettingsSection } from "@/components/dashboard/settings-section";
 import { ProtectedRoute } from "@/components/auth/protected-route";
+import { DebugAuth } from "@/components/debug-auth";
 import { useState } from "react";
 
 export default function DashboardPage() {
@@ -19,6 +20,7 @@ export default function DashboardPage() {
         {activeTab === "audit" && <AuditSection />}
         {activeTab === "settings" && <SettingsSection />}
       </DashboardLayout>
+      <DebugAuth />
     </ProtectedRoute>
   );
 }

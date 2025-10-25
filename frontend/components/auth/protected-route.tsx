@@ -18,20 +18,29 @@ export function ProtectedRoute({
   const { isConnected } = useAccount();
   const router = useRouter();
 
+  console.log("ProtectedRoute state:", {
+    user: user ? { id: user.id, name: user.name, email: user.email } : null,
+    isLoading,
+    isConnected,
+  });
+
   useEffect(() => {
+    // Only check for redirect when not loading
     if (!isLoading) {
+      // If no user and not loading, redirect to login
       if (!user) {
-        router.push("/login");
+        console.log("No user found, redirecting to login");
+        // Use replace instead of push to avoid adding to history
+        router.replace("/login");
         return;
       }
 
-      if (requireWallet && !isConnected) {
-        // Don't redirect, just show a message or prompt to connect wallet
-        return;
-      }
+      // If wallet is required but not connected, we don't redirect
+      // just show the wallet connection message
     }
-  }, [user, isLoading, isConnected, requireWallet, router]);
+  }, [user, isLoading, router]);
 
+  // Show loading state while checking authentication
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -43,10 +52,16 @@ export function ProtectedRoute({
     );
   }
 
+  // If no user after loading, don't render children (will redirect)
   if (!user) {
-    return null; // Will redirect to login
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
   }
 
+  // Show wallet connection prompt if required
   if (requireWallet && !isConnected) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -60,5 +75,6 @@ export function ProtectedRoute({
     );
   }
 
+  // User is authenticated (and wallet connected if required)
   return <>{children}</>;
 }

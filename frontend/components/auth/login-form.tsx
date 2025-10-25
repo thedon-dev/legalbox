@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,8 +20,7 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { login } = useAuth();
-  const router = useRouter();
+  const { login, user } = useAuth(); // Add user to see state
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,13 +29,16 @@ export function LoginForm() {
 
     try {
       const response = await login(email, password);
-      console.log("Teesting: ", response);
-      if (response.success) {
-        router.push("/dashboard");
-      }
+      console.log("Login successful, response:", response);
+
+      // Wait a bit more to ensure state is fully updated
+      setTimeout(() => {
+        console.log("Redirecting to dashboard...");
+        window.location.href = "/dashboard";
+      }, 200);
     } catch (err: any) {
+      console.error("Login error:", err);
       setError(err.response?.data?.message || "Login failed");
-    } finally {
       setIsLoading(false);
     }
   };

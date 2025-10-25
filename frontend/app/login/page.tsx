@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
 import { useAccount } from "wagmi";
 import Link from "next/link";
+import { DebugAuth } from "@/components/debug-auth";
 
 export default function LoginPage() {
   const [showWalletConnect, setShowWalletConnect] = useState(false);
@@ -76,9 +77,9 @@ export default function LoginPage() {
                   <Button asChild className="w-full">
                     <Link href="/register">Create Account</Link>
                   </Button>
-                  <Button variant="outline" asChild className="w-full">
+                  {/* <Button variant="outline" asChild className="w-full">
                     <Link href="/login">Login</Link>
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             )}
@@ -93,6 +94,7 @@ export default function LoginPage() {
           </div>
         )}
       </div>
+      <DebugAuth />
     </div>
   );
 }

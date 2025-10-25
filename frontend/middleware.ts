@@ -9,10 +9,8 @@ export function middleware(request: NextRequest) {
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/register");
 
-  // Get token from cookies or headers
-  const token =
-    request.cookies.get("token")?.value ||
-    request.headers.get("authorization")?.replace("Bearer ", "");
+  // Get token from cookies (we'll need to set this in the auth context)
+  const token = request.cookies.get("token")?.value;
 
   // If accessing protected route without token, redirect to login
   if (isProtectedRoute && !token) {
