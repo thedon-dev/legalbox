@@ -1,0 +1,204 @@
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+// Create axios instance
+const api: AxiosInstance = axios.create({
+  baseURL: API_BASE,
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  },
+});
+
+// Request interceptor to add auth token
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
+// Response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear token and redirect to login
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Types
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  walletAddress?: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+export interface Document {
+  id: string;
+  name: string;
+  hash: string;
+  cloudUrl: string;
+  ipfsCid?: string;
+  blockdagTxId?: string;
+  blockdagStatus?: "pending" | "confirmed" | "failed";
+  isPublic: boolean;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShareLink {
+  id: string;
+  shareUrl: string;
+  token: string;
+  expiresAt: string;
+  documentId: string;
+  allowDownload: boolean;
+}
+
+export interface VerificationResult {
+  verified: boolean;
+  match: {
+    inDb: boolean;
+    blockdag: {
+      txId: string;
+      status: string;
+      match: boolean;
+    };
+  };
+  details: any;
+}
+
+// API functions
+export const authApi = {
+  register: async (data: {
+    name: string;
+    email: string;
+    password: string;
+    walletAddress?: string;
+  }): Promise<AuthResponse> => {
+    const response = await api.post("/api/auth/register", data);
+    return response.data;
+  },
+
+  login: async (data: {
+    email: string;
+    password: string;
+  }): Promise<AuthResponse> => {
+    const response = await api.post("/api/auth/login", data);
+    return response.data;
+  },
+};
+
+export const documentsApi = {
+  upload: async (
+    file: File,
+    options: { name?: string; description?: string; isPublic?: boolean } = {}
+  ): Promise<{ document: Document }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (options.name) formData.append("name", options.name);
+    if (options.description)
+      formData.append("description", options.description);
+    if (options.isPublic !== undefined)
+      formData.append("isPublic", options.isPublic.toString());
+
+    const response = await api.post("/api/documents/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
+
+  getByWallet: async (walletAddress: string): Promise<Document[]> => {
+    const response = await api.get(`/api/documents/wallet/${walletAddress}`);
+    return response.data;
+  },
+
+  getById: async (id: string): Promise<Document> => {
+    const response = await api.get(`/api/documents/${id}`);
+    return response.data;
+  },
+};
+
+export const shareApi = {
+  create: async (data: {
+    documentId: string;
+    expiresInSeconds?: number;
+    allowDownload?: boolean;
+  }): Promise<ShareLink> => {
+    const response = await api.post("/api/share", data);
+    return response.data;
+  },
+
+  getById: async (shareId: string): Promise<Document> => {
+    const response = await api.get(`/api/share/${shareId}`);
+    return response.data;
+  },
+
+  revoke: async (shareId: string): Promise<void> => {
+    await api.delete(`/api/share/${shareId}`);
+  },
+};
+
+export const verifyApi = {
+  byFile: async (file: File): Promise<VerificationResult> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await api.post("/api/verify", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
+
+  byHash: async (hash: string): Promise<VerificationResult> => {
+    const response = await api.post("/api/verify", { hash });
+    return response.data;
+  },
+};
+
+export const blockdagApi = {
+  getTxStatus: async (txId: string): Promise<{ status: string }> => {
+    const response = await api.get(`/api/blockdag/tx/${txId}`);
+    return response.data;
+  },
+
+  getDocumentStatus: async (
+    documentId: string
+  ): Promise<{ status: string }> => {
+    const response = await api.get(`/api/documents/${documentId}/blockdag`);
+    return response.data;
+  },
+};
+
+export const logsApi = {
+  get: async (
+    params: { documentId?: string; limit?: number; skip?: number } = {}
+  ): Promise<any[]> => {
+    const response = await api.get("/api/logs", { params });
+    return response.data;
+  },
+};
+
+export default api;
