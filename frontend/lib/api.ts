@@ -199,6 +199,105 @@ export const blockdagApi = {
   },
 };
 
+export const blockchainApi = {
+  getStatus: async (): Promise<{
+    success: boolean;
+    network: any;
+    contract: any;
+    stats: any;
+  }> => {
+    const response = await api.get("/api/blockchain/status");
+    return response.data;
+  },
+
+  uploadDocument: async (data: {
+    docHash: string;
+    title: string;
+    description: string;
+    ownerAddress: string;
+  }): Promise<{ success: boolean; data: any }> => {
+    const response = await api.post("/api/blockchain/documents/upload", data);
+    return response.data;
+  },
+
+  grantPermission: async (
+    documentId: number,
+    toAddress: string
+  ): Promise<{ success: boolean; data: any }> => {
+    const response = await api.post(
+      `/api/blockchain/documents/${documentId}/grant-permission`,
+      { toAddress }
+    );
+    return response.data;
+  },
+
+  revokePermission: async (
+    documentId: number,
+    fromAddress: string
+  ): Promise<{ success: boolean; data: any }> => {
+    const response = await api.post(
+      `/api/blockchain/documents/${documentId}/revoke-permission`,
+      { fromAddress }
+    );
+    return response.data;
+  },
+
+  transferOwnership: async (
+    documentId: number,
+    newOwnerAddress: string
+  ): Promise<{ success: boolean; data: any }> => {
+    const response = await api.post(
+      `/api/blockchain/documents/${documentId}/transfer-ownership`,
+      { newOwnerAddress }
+    );
+    return response.data;
+  },
+
+  getMyDocuments: async (
+    userAddress: string
+  ): Promise<{
+    success: boolean;
+    documents: any[];
+  }> => {
+    const response = await api.get(
+      `/api/blockchain/documents/my/${userAddress}`
+    );
+    return response.data;
+  },
+
+  getSharedDocuments: async (
+    userAddress: string
+  ): Promise<{
+    success: boolean;
+    documents: any[];
+  }> => {
+    const response = await api.get(
+      `/api/blockchain/documents/shared/${userAddress}`
+    );
+    return response.data;
+  },
+
+  getDocument: async (
+    documentId: number
+  ): Promise<{
+    success: boolean;
+    document: any;
+  }> => {
+    const response = await api.get(`/api/blockchain/documents/${documentId}`);
+    return response.data;
+  },
+
+  checkPermission: async (
+    documentId: number,
+    userAddress: string
+  ): Promise<{ success: boolean; hasPermission: boolean }> => {
+    const response = await api.get(
+      `/api/blockchain/documents/${documentId}/permission/${userAddress}`
+    );
+    return response.data;
+  },
+};
+
 export const logsApi = {
   get: async (
     params: { documentId?: string; limit?: number; skip?: number } = {}
