@@ -56,6 +56,10 @@ The smart contract manages:
 | Upload or Sharing History Events | ✅ Yes |
 | Actual Document File | ❌ No (too large & must stay private) |
 
+
+## 🎥 Demo Video
+[Watch Demo on Google Drive](https://drive.google.com/file/d/1kk0lrszwT0JO97-Fg3G8it146it-LS1a/view?usp=drivesdk)
+
 ### Smart Contract Functions (Simplified)
 ```solidity
 function registerDocument(bytes32 docHash) public;
