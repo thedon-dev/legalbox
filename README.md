@@ -11,6 +11,10 @@ Users manage documents and sharing permissions directly from a simple web interf
 
 ---
 
+## 🚀 Live Demo
+**LegalBox Application:**  
+[https://legalbox.vercel.app](https://legalbox.vercel.app)
+
 ## 🎯 Project Goal
 
 To solve the problem of **fraudulent documents**, **loss of files**, and **unverified document exchanges** by providing:
@@ -57,9 +61,5 @@ The smart contract manages:
 function registerDocument(bytes32 docHash) public;
 function grantAccess(address user, bytes32 docHash) public;
 function revokeAccess(address user, bytes32 docHash) public;
-function hasAccess(address user, bytes32 docHash) public view returns(bool);
+function hasAccess(address user, bytes32 docHash) public view returns(bool);```
 
-
-## 🚀 Live Demo
-**LegalBox Application:**  
-[https://legalbox.vercel.app](https://legalbox.vercel.app)
