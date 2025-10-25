@@ -60,5 +60,6 @@ function revokeAccess(address user, bytes32 docHash) public;
 function hasAccess(address user, bytes32 docHash) public view returns(bool);
 
 
-### 🔗 Live App
-👉 **[legalbox.vercel.app](https://legalbox.vercel.app)**
+## 🚀 Live Demo
+**LegalBox Application:**  
+[https://legalbox.vercel.app](https://legalbox.vercel.app)
