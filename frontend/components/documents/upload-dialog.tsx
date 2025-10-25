@@ -77,6 +77,7 @@ export function UploadDialog({
         name: name || file.name,
         description,
         isPublic,
+        ownerWallet: user?.walletAddress,
       });
 
       clearInterval(progressInterval);
