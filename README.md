@@ -58,3 +58,6 @@ function registerDocument(bytes32 docHash) public;
 function grantAccess(address user, bytes32 docHash) public;
 function revokeAccess(address user, bytes32 docHash) public;
 function hasAccess(address user, bytes32 docHash) public view returns(bool);
+
+
+vercel link: https://legalbox.vercel.app/dashboard
