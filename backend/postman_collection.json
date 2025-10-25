@@ -1,0 +1,156 @@
+{
+  "info": {
+    "name": "Hackathon-backend API",
+    "_postman_id": "hackathon-backend-collection",
+    "description": "Basic Postman collection for frontend consumption. Replace {{baseUrl}} and {{token}} variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": [] },
+                { "key": "name", "value": "contract.pdf", "type": "text" },
+                { "key": "description", "value": "Legal contract", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/documents/upload", "host": ["{{baseUrl}}"], "path": ["api","documents","upload"] }
+          }
+        },
+        {
+          "name": "Get Document",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/documents/:id", "host": ["{{baseUrl}}"], "path": ["api","documents",":id"] }
+          }
+        },
+        {
+          "name": "List by Wallet",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/documents/wallet/:walletAddress", "host": ["{{baseUrl}}"], "path": ["api","documents","wallet",":walletAddress"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Share",
+      "item": [
+        {
+          "name": "Create Share",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"documentId\": \"<documentId>\",\n  \"expiresInSeconds\": 3600\n}" },
+            "url": { "raw": "{{baseUrl}}/api/share", "host": ["{{baseUrl}}"], "path": ["api","share"] }
+          }
+        },
+        {
+          "name": "Access Share",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/share/:shareId", "host": ["{{baseUrl}}"], "path": ["api","share",":shareId"] }
+          }
+        },
+        {
+          "name": "Revoke Share",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/share/:shareId", "host": ["{{baseUrl}}"], "path": ["api","share",":shareId"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify",
+      "item": [
+        {
+          "name": "Verify by Hash",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"hash\": \"sha256-...\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/verify", "host": ["{{baseUrl}}"], "path": ["api","verify"] }
+          }
+        },
+        {
+          "name": "Verify by File",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "multipart/form-data" } ],
+            "body": { "mode": "formdata", "formdata": [ { "key": "file", "type": "file", "src": [] } ] },
+            "url": { "raw": "{{baseUrl}}/api/verify", "host": ["{{baseUrl}}"], "path": ["api","verify"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BlockDAG",
+      "item": [
+        {
+          "name": "Get TX Status",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/blockdag/tx/:txId", "host": ["{{baseUrl}}"], "path": ["api","blockdag","tx",":txId"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logs",
+      "item": [
+        {
+          "name": "Get Logs",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/logs?documentId=:id&limit=50", "host": ["{{baseUrl}}"], "path": ["api","logs"] }
+          }
+        }
+      ]
+    }
+  ]
+}
