@@ -6,6 +6,7 @@ import { SharedSection } from "@/components/dashboard/shared-section";
 import { AuditSection } from "@/components/dashboard/audit-section";
 import { SettingsSection } from "@/components/dashboard/settings-section";
 import { ProtectedRoute } from "@/components/auth/protected-route";
+import { WalletConnectionBanner } from "@/components/dashboard/wallet-connection-banner";
 import { DebugAuth } from "@/components/debug-auth";
 import { useState } from "react";
 
@@ -15,6 +16,7 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute requireWallet>
       <DashboardLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+        <WalletConnectionBanner />
         {activeTab === "documents" && <DocumentsSection />}
         {activeTab === "shared" && <SharedSection />}
         {activeTab === "audit" && <AuditSection />}

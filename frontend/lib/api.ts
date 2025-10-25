@@ -129,8 +129,15 @@ export const documentsApi = {
   },
 
   getByWallet: async (walletAddress: string): Promise<Document[]> => {
-    const response = await api.get(`/api/documents/wallet/${walletAddress}`);
-    return response.data;
+    try {
+      const response = await api.get(`/api/documents/wallet/${walletAddress}`);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return [];
+      }
+      throw error;
+    }
   },
 
   getById: async (id: string): Promise<Document> => {
@@ -196,8 +203,29 @@ export const logsApi = {
   get: async (
     params: { documentId?: string; limit?: number; skip?: number } = {}
   ): Promise<any[]> => {
-    const response = await api.get("/api/logs", { params });
-    return response.data;
+    try {
+      const response = await api.get("/api/logs", { params });
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return [];
+      }
+      throw error;
+    }
+  },
+};
+
+export const sharedApi = {
+  getSharedWithMe: async (): Promise<any[]> => {
+    try {
+      const response = await api.get("/api/shared/me");
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return [];
+      }
+      throw error;
+    }
   },
 };
 

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useAccount } from "wagmi";
+import { WalletConnect } from "@/components/wallet/wallet-connect";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -52,11 +53,29 @@ export function ProtectedRoute({
     );
   }
 
-  // If no user after loading, don't render children (will redirect)
+  // If no user after loading, show login prompt with wallet connect option
   if (!user) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
+        <div className="text-center space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-2">
+              Authentication Required
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              Please log in to access this page.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <WalletConnect />
+            <button
+              onClick={() => router.replace("/login")}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              Go to Login
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -65,11 +84,16 @@ export function ProtectedRoute({
   if (requireWallet && !isConnected) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Wallet Required</h2>
-          <p className="text-muted-foreground mb-4">
-            Please connect your wallet to access this page.
-          </p>
+        <div className="text-center space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Wallet Required</h2>
+            <p className="text-muted-foreground mb-4">
+              Please connect your wallet to access this page.
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <WalletConnect />
+          </div>
         </div>
       </div>
     );

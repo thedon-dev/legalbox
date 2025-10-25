@@ -50,6 +50,8 @@ __turbopack_context__.s([
     ()=>logsApi,
     "shareApi",
     ()=>shareApi,
+    "sharedApi",
+    ()=>sharedApi,
     "verifyApi",
     ()=>verifyApi
 ]);
@@ -111,8 +113,15 @@ const documentsApi = {
         return response.data;
     },
     getByWallet: async (walletAddress)=>{
-        const response = await api.get(`/api/documents/wallet/${walletAddress}`);
-        return response.data;
+        try {
+            const response = await api.get(`/api/documents/wallet/${walletAddress}`);
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 404) {
+                return [];
+            }
+            throw error;
+        }
     },
     getById: async (id)=>{
         const response = await api.get(`/api/documents/${id}`);
@@ -162,10 +171,30 @@ const blockdagApi = {
 };
 const logsApi = {
     get: async (params = {})=>{
-        const response = await api.get("/api/logs", {
-            params
-        });
-        return response.data;
+        try {
+            const response = await api.get("/api/logs", {
+                params
+            });
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 404) {
+                return [];
+            }
+            throw error;
+        }
+    }
+};
+const sharedApi = {
+    getSharedWithMe: async ()=>{
+        try {
+            const response = await api.get("/api/shared/me");
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 404) {
+                return [];
+            }
+            throw error;
+        }
     }
 };
 const __TURBOPACK__default__export__ = api;
