@@ -1,0 +1,30 @@
+{
+  "name": "legalbox-smartcontract",
+  "version": "1.0.0",
+  "description": "BlockDAG smart contract for decentralized document management",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js --network blockdag-testnet",
+    "deploy-local": "hardhat run scripts/deploy.js --network localhost",
+    "verify": "hardhat verify --network blockdag-testnet",
+    "test-interactions": "hardhat run scripts/test-interactions.js --network blockdag-testnet",
+    "check-balance": "hardhat run scripts/check-balance.js --network blockdag-testnet",
+    "coverage": "npx hardhat coverage"
+  },
+  "keywords": [
+    "blockchain",
+    "document-management",
+    "blockdag"
+  ],
+  "author": "LegalBox Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0"
+  }
+}
