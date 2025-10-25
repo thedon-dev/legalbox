@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useAuth } from "@/lib/auth";
+import { useAccount } from "wagmi";
 import { documentsApi, Document } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,7 @@ export function UploadDialog({
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
+  const { address } = useAccount();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -56,6 +58,11 @@ export function UploadDialog({
 
   const handleUpload = async () => {
     if (!file || !user) return;
+
+    if (!address && !user?.walletAddress) {
+      setError("Please connect your wallet to upload documents");
+      return;
+    }
 
     setIsUploading(true);
     setError("");
@@ -77,6 +84,7 @@ export function UploadDialog({
         name: name || file.name,
         description,
         isPublic,
+        ownerWallet: address || user?.walletAddress,
       });
 
       clearInterval(progressInterval);
