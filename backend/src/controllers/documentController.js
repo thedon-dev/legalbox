@@ -130,4 +130,18 @@ const getDetails = asyncHandler(async (req, res) => {
   res.json({ doc });
 });
 
-module.exports = { uploadDocument, getByWallet, getDetails };
+// GET /api/documents/:id/blockdag
+const getBlockdagStatus = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const doc = await Document.findById(id);
+  if (!doc) return res.status(404).json({ message: "Not found" });
+
+  res.json({
+    status: doc.blockdagStatus || "pending",
+    txId: doc.blockdagTxId,
+    documentId: doc.blockdagDocumentId,
+    node: doc.blockdagNode,
+  });
+});
+
+module.exports = { uploadDocument, getByWallet, getDetails, getBlockdagStatus };

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
@@ -110,7 +110,12 @@ export const authApi = {
 export const documentsApi = {
   upload: async (
     file: File,
-    options: { name?: string; description?: string; isPublic?: boolean } = {}
+    options: {
+      name?: string;
+      description?: string;
+      isPublic?: boolean;
+      ownerWallet?: string;
+    } = {}
   ): Promise<{ document: Document }> => {
     const formData = new FormData();
     formData.append("file", file);
@@ -119,6 +124,8 @@ export const documentsApi = {
       formData.append("description", options.description);
     if (options.isPublic !== undefined)
       formData.append("isPublic", options.isPublic.toString());
+    if (options.ownerWallet)
+      formData.append("ownerWallet", options.ownerWallet);
 
     const response = await api.post("/api/documents/upload", formData, {
       headers: {
